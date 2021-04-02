@@ -1,0 +1,145 @@
+body {
+	font-family: sans-serif;
+}
+/*styling widget container and background pseudoelements*/
+.circle-widget {
+	position: relative;
+	width: 400px;
+	height: 400px;
+	text-align: center;
+	flex-direction: column;
+	justify-content: center;
+	align-content: center;
+	align-items: center;
+	display: inline-flex; /*or flex*/
+	vertical-align: middle;
+	--chart-color: #bbb;
+}
+.circle-widget.pie {
+	width: 280px;
+	height: 280px;
+	margin: 0 10px;
+}
+.circle-widget::before, .circle-widget::after {
+	position: absolute;
+	content: '';
+	background: #F7F7F7;
+	border-radius: 50%;
+	box-sizing: border-box;
+	z-index: -1;
+}
+.circle-widget::before {
+	width: 390px;
+	height: 390px;
+	border: #eee 10px solid;
+}
+.circle-widget.pie::before {
+	width: 100%;
+	height: 100%;
+	border-width: 24px;
+}
+.circle-widget::after {
+	width: 310px;
+	height: 310px;
+	background: #fff;
+	box-shadow: 0px 10px 40px -15px var(--chart-color);
+	transition: box-shadow 1s;
+}
+.circle-widget.pie::after {
+	width: 192px;
+	height: 192px;
+}
+
+/*styling the text inside a circles*/
+
+.circle-widget > div {
+	color: #000;
+	position: relative;
+}
+.circle-widget b {
+	display: block;
+	font-size: larger;
+    margin-top: .3em;
+    white-space: nowrap;
+}
+.circle-widget hr {
+	min-width: 130px;
+	border: #aaa .5px solid;
+}
+
+/*styling toolltips in PIE chart*/
+
+.circle-widget.pie .item {
+	position: absolute;
+	background: #fff;
+	border-radius: 5px;
+	padding: 1em 1.5em;
+	border-top: #FFD028 4px solid;
+	box-shadow: 0px 10px 20px rgba(1, 1, 1, 0.2);
+	transition: .3s, top 50ms, left .1s;
+	--arrow-left: 60%;
+	z-index: 1;
+}
+.circle-widget.pie .item:not(.visible) {
+	visibility: hidden;
+	opacity: 0;
+}
+.circle-widget.pie .item::before {
+	content: '';
+	position: absolute;
+	border: solid;
+	border-color: #FFD028 transparent;
+	border-width: 0 13px 13px; 
+	left: var(--arrow-left);
+	top: -16px;
+	transition: left 0.1s;
+}
+/*Styling svg elements*/
+
+.circle-widget svg {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+}
+
+.circle-widget circle {
+	fill: none;
+	stroke-linecap: round;
+	transition: .8s, opacity .3s;
+}
+
+.circle-widget.chart .arc {
+	transform: scaleX(-1) rotate(90deg);
+	stroke-dasharray: 1px 1200px;
+}
+.circle-widget pattern .arc {
+	transition: none !important;
+	transform: translate(50%, 50%) !important;
+}
+
+.circle-widget .dots {
+    r: 125px;
+    stroke: var(--chart-color);
+    stroke-width: 2px;
+    stroke-dasharray: 0.07px 10px;
+}
+.circle-widget.pie .dots {
+    r: 105.8px;
+}
+.circle-widget .dots.initial {
+	transform: rotate(-10deg);
+}
+.circle-widget .initial {
+	stroke-width: 0;
+	opacity: 0;
+}
+.circle-widget.chart .initial {
+	stroke-dashoffset: 2px;
+}
+.circle-widget. pattern .arc {
+	transform: none !important;
+}
+
+
+.circle-widget:nth-child(3)>svg * {transition-delay: .4s !important}
+.circle-widget:nth-child(4)>svg * {transition-delay: .8s !important}
