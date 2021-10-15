@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>PIE chart</title>
+	<script src="../jquery-3.4.1.slim.min.js"></script>
+	<script >
+		function createPIE($) {
+			const sectors=[], svg=$('.diagram>svg');
+			let sum=0, start=0;
+			$('circle', svg).remove();
+			$('.data-list>div:visible').each((i,el)=>{
+				let val=parseFloat($('dt', el).text())/100;
+				sum+=val;
+				sectors.push({
+					val: val,
+					title: $('dd', el).html(),
+					el: el,
+					color: $('dt', el).css('background-color')
+				})
+			});
+			sectors.sort((a,b)=>a.val-b.val)
+			.forEach((item,i)=>{
+				item.val/=sum;
+				const {val, title, el, color} = item;
+				const sector=$('circle', '<svg><circle pathLength="1">').css({
+					stroke: color,
+					'stroke-dashoffset': -start,
+					'stroke-dasharray': val+', 1'
+				}).appendTo(svg);
+				start+=val;
+			})
+		}
+		//jQuery(createPIE);
+	</script>
+	<style type="text/css">
+		body {
+			background: #fff;
+			font-family: sans-serif;
+			text-align: center;
+			color: #1C075F;
+		}
+		.data-list {
+			display: flex;
+			justify-content: space-between;
+		}
+
+		.data-list div {
+			/* flex-shrink: 0; */
+			flex-basis: 150px;
+			text-align: center;
+		}
+		.data-list dt {
+			width: 4em;
+			line-height: 2em;
+			margin: auto;
+			background: hsl(254deg 86% 20%);
+			font-weight: bold;
+			color: #fff;
+		}
+		.data-list dd {
+			margin: .5em;
+		}
+		/*Vidget style*/
+		.diagram {
+			--size: 300px;
+			--thickness: 30px;
+			margin: auto;
+			width: var(--size);
+		}
+		.diagram svg {
+			display: block;
+			margin: var(--thickness) auto;
+			overflow: visible;
+			width: var(--size);
+    		height: var(--size)
+		}
+		.diagram svg circle {
+			r: calc(50% - var(--thickness) / 2);
+			stroke-width: var(--thickness);
+			fill: none;
+			cx: 50%;
+			cy: 50%;
+			transform: rotate(-45deg);
+			transform-origin: 50% 50%;
+		}
+	</style>
+</head>
+<body dir="rtl">
+	<h2>אפיקי השקעה</h2>
+	<div class="diagram">
+		<svg ></svg>
+	</div>
+	<dl class="data-list">
+		<div>
+			<dt style="background: rgb(28 7 95/19%);">2.3%</dt>
+			<dd>קרנות נאמנות</dd>
+		</div>
+		<div>
+			<dt style="background: rgb(28 7 95/28%);">5.1%</dt>
+			<dd>אגרות חוב מיועדות</dd>
+		</div>
+		<div>
+			<dt style="background: rgb(28 7 95/37%);">7%</dt>
+			<dd>נכסים אחרים</dd>
+		</div>
+		<div>
+			<dt style="background: rgb(28 7 95/46%);">18%</dt>
+			<dd>פיקדונות</dd>
+		</div>
+		<div>
+			<dt style="background: rgb(28 7 95/55%);">2.3%</dt>
+			<dd>מזומנים ושווי מזומנים</dd>
+		</div>
+		<div>
+			<dt style="background: rgb(28 7 95/64%);">5.1%</dt>
+			<dd>מניות, אופציות וקרנות סל מנייתיות</dd>
+		</div>
+		<div>
+			<dt style="background: rgb(28 7 95/73%);">7%</dt>
+			<dd>אג"ח קונצרניות לא סחירות</dd>
+		</div>
+		<div>
+			<dt style="background: rgb(28 7 95/82%);">18%</dt>
+			<dd>הלוואות</dd>
+		</div>
+		<div>
+			<dt style="background: rgb(28 7 95/91%);">25.6%</dt>
+			<dd>מניות, אופציות, וקרנות סל מנייתיות</dd>
+		</div>
+		<div>
+			<dt style="background: rgb(28 7 95);">42%</dt>
+			<dd>אג״ח ממשלתיות סחירות</dd>
+		</div>
+	</dl>
+	<label>Generate <input type="number" min=4 max=10 value="10" id="generate"> items</label>
+	<script>
+		jQuery('#generate').on('input', function (e) {
+			if (!this.validity.valid) return;
+			const count=this.value;
+			$('.data-list>div').hide();
+			for (let i = 0, rest=100; i < count; i++) {
+				let val=i==count-1?rest:(Math.random()*rest*2/count);
+				$('.data-list>div:hidden').eq(parseInt(Math.random()*(10-i))).show()
+				 .children('dt').text(+val.toFixed(1)+'%');
+				//console.log(rest, val);
+				rest-=val;
+			}
+			createPIE(jQuery);
+		}).trigger('input');
+	</script>
+</body>
+</html>
