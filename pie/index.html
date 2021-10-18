@@ -4,63 +4,10 @@
 	<meta charset="utf-8">
 	<title>PIE chart</title>
 	<script src="../jquery-3.4.1.slim.min.js"></script>
-	<script >
-		function createPIE() {
-			const PIE_SELECTOR = '.diagram',
-				ITEM_SELECTOR = '.data-list>div', // selectors below must be inside this element
-				VALUE_SELECTOR = 'dt', //background-color and content from this elements uses for diagram
-				DESCRIPTION_SELECTOR = 'dd'
-
-			const sectors=[], container=$(PIE_SELECTOR).empty(),
-			 svg=$('<svg><g class="pie-pointer">').appendTo(container),
-			 pointer=$('g', svg).html('<rect class="pie-line"/><rect class="pie-marker"/>'),
-			 angle=svg[0].createSVGAngle();
-			angle.valueAsString=container.css('--turn');
-			let sum=0, start0=0;
-			$('circle', svg).remove();
-			$(ITEM_SELECTOR).each((i,el)=>{
-				let val=parseFloat($(VALUE_SELECTOR, el).text())/100;
-				sum+=val;
-				sectors.push({
-					val: val,
-					text: $(DESCRIPTION_SELECTOR, el).html(),
-					el: el,
-					color: $(VALUE_SELECTOR, el).css('background-color')
-				})
-			});
-			sectors.sort((a,b)=>a.val-b.val)
-			.forEach((item,i)=>{
-				item.val/=sum;
-				const {val, text, el, color} = item, start=start0, isLast = i+1==sectors.length;
-				const title=$('<div class="pie-title">').hide().html(text).appendTo(container);
-				const sector=$('circle', '<svg><circle pathLength="1">').css({
-					stroke: color,
-					'stroke-dashoffset': -start,
-					'stroke-dasharray': val+.0015+', '+(1-val-.001)
-				}).appendTo(svg);
-				sector.add(el).mouseenter(e=>{
-					let turn=angle.value/360;
-					const begin=start+turn,
-					 end=(+isLast||start+val)+turn,
-					 turn0=parseFloat(pointer.css('--turn'));
-					turn=isLast?end:distTo(begin, .5)<distTo(end, .5)?begin:end;
-					turn=((turn-turn0+.5)%1+1)%1-.5;
-					pointer.css({
-						'--turn': turn0+turn+'turn',
-						transition: Math.max(Math.abs(turn*1.5), .2)+'s'});
-				})
-				start0+=val;
-				if (isLast) sector.mouseenter();
-			})
-		}
-		function distTo(a, base=1){
-			a=Math.abs(a%base)
-			return Math.min(a, base-a)
-		}
-		//jQuery(createPIE);
-	</script>
+	<script src="pie.js"></script>
+	<link rel="stylesheet" type="text/css" href="pie.css">
 	<style type="text/css">
-		body {
+		:root {
 			background: #fff;
 			font-family: sans-serif;
 			text-align: center;
@@ -87,54 +34,6 @@
 		.data-list dd {
 			margin: .5em;
 		}
-		/*Vidget style*/
-		.diagram {
-			--size: 326px;
-			--thickness: 50px;
-			--marker:  10px;
-			--turn: -45deg;
-			--color: #1C075F;
-			margin: auto;
-			width: var(--size);
-		}
-		.diagram svg {
-			display: block;
-			margin: var(--thickness) auto;
-			overflow: visible;
-			width: var(--size);
-    		height: var(--size)
-		}
-		.diagram svg circle {
-			--pixel: calc(1px / var(--size));
-			r: calc(50% - var(--thickness) / 2);
-			stroke-width: var(--thickness);
-			/* stroke-dasharray: 1; */
-			fill: none;
-			cx: 50%;
-			cy: 50%;
-			transform: rotate(var(--turn));
-			transform-origin: 50% 50%;
-		}
-		.diagram .pie-pointer {
-			fill:  var(--color);
-			transform: rotate(var(--turn)) translateY(1px) translate(50%, 50%);
-			transform-origin: 50% 50%;
-			transition: .2s transform;
-			--turn: -.25turn;
-		}
-		.diagram .pie-line {
-			height: 1px;
-			width: var(--thickness);
-			x: 50%;
-			y: -0.5;
-		}
-		.diagram .pie-marker {
-			height: var(--marker);
-			width: var(--marker);
-			x: calc(50% + var(--thickness));
-			y: calc(var(--marker) / -2);
-		}
-
 	</style>
 </head>
 <body dir="rtl">
@@ -142,64 +41,65 @@
 	<div class="diagram"></div>
 	<dl class="data-list">
 		<div>
-			<dt style="background: rgb(28 7 95/19%);">2.3%</dt>
+			<dt>2.3%</dt>
 			<dd>קרנות נאמנות</dd>
 		</div>
 		<div>
-			<dt style="background: rgb(28 7 95/28%);">5.1%</dt>
+			<dt>5.1%</dt>
 			<dd>אגרות חוב מיועדות</dd>
 		</div>
 		<div>
-			<dt style="background: rgb(28 7 95/37%);">7%</dt>
+			<dt>7%</dt>
 			<dd>נכסים אחרים</dd>
 		</div>
 		<div>
-			<dt style="background: rgb(28 7 95/46%);">18%</dt>
+			<dt>18%</dt>
 			<dd>פיקדונות</dd>
 		</div>
 		<div>
-			<dt style="background: rgb(28 7 95/55%);">2.3%</dt>
+			<dt>2.3%</dt>
 			<dd>מזומנים ושווי מזומנים</dd>
 		</div>
 		<div>
-			<dt style="background: rgb(28 7 95/64%);">5.1%</dt>
+			<dt>5.1%</dt>
 			<dd>מניות, אופציות וקרנות סל מנייתיות</dd>
 		</div>
 		<div>
-			<dt style="background: rgb(28 7 95/73%);">7%</dt>
+			<dt>7%</dt>
 			<dd>אג"ח קונצרניות לא סחירות</dd>
 		</div>
 		<div>
-			<dt style="background: rgb(28 7 95/82%);">18%</dt>
+			<dt>18%</dt>
 			<dd>הלוואות</dd>
 		</div>
 		<div>
-			<dt style="background: rgb(28 7 95/91%);">25.6%</dt>
+			<dt>25.6%</dt>
 			<dd>מניות, אופציות, וקרנות סל מנייתיות</dd>
 		</div>
 		<div>
-			<dt style="background: rgb(28 7 95);">42%</dt>
+			<dt>42%</dt>
 			<dd>אג״ח ממשלתיות סחירות</dd>
 		</div>
 	</dl>
 	<label>Generate <input type="number" min=4 max=10 value="10" id="generate"> items</label>
 	<script>
-		let list=$('.data-list'), items=$('>div', list)
+		let list=$('.data-list'), items=$('>div', list);
 		list[0].querySelectorAll('dt').forEach((el, i)=>{
 			el.style.background=`rgb(${255-22.7*(i=i*7/9+3)} ${255-24.8*i} ${255-16*i})`
 		})
 		jQuery('#generate').on('input', function (e) {
 			if (!this.validity.valid) return;
 			const count=this.value;
-			let divs=items.remove().clone();
-			$('>div', list).remove();
+			let divs=items.clone().appendTo(list);
+			$('>div', list).hide();
 			for (let i = 0, rest=100; i < count; i++) {
 				let val=i==count-1?rest:(Math.random()*rest*2/count+.3);
-				divs.not(':visible').eq(parseInt(Math.random()*(10-i))).appendTo(list)
+				divs.not(':visible').eq(parseInt(Math.random()*(10-i))).show()
 				 .children('dt').text(+val.toFixed(1)+'%');
 				//console.log(rest, val);
 				rest-=val;
 			}
+			$('>div:hidden', list).remove()
 			createPIE();
 		}).trigger('input');
 	</script>

@@ -1,0 +1,46 @@
+.diagram {
+	--size: 326px;
+	--thickness: 50px;
+	--marker:  10px;
+	--turn: -45deg;
+	--color: #1C075F;
+	margin: auto;
+	width: var(--size);
+}
+.diagram svg {
+	display: block;
+	margin: var(--thickness) auto;
+	overflow: visible;
+	width: var(--size);
+	height: var(--size)
+}
+.diagram svg circle {
+	--pixel: calc(1px / var(--size));
+	r: calc(50% - var(--thickness) / 2);
+	stroke-width: var(--thickness);
+	/* stroke-dasharray: 1; */
+	fill: none;
+	cx: 50%;
+	cy: 50%;
+	transform: rotate(var(--turn));
+	transform-origin: 50% 50%;
+}
+.diagram .pie-pointer {
+	fill:  var(--color);
+	transform: rotate(var(--turn)) translateY(1px) translate(50%, 50%);
+	transform-origin: 50% 50%;
+	transition: .2s transform;
+	--turn: -.25turn;
+}
+.diagram .pie-line {
+	height: 1px;
+	width: var(--thickness);
+	x: 50%;
+	y: -0.5;
+}
+.diagram .pie-marker {
+	height: var(--marker);
+	width: var(--marker);
+	x: calc(50% + var(--thickness));
+	y: calc(var(--marker) / -2);
+}
