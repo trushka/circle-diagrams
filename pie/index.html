@@ -5,31 +5,57 @@
 	<title>PIE chart</title>
 	<script src="../jquery-3.4.1.slim.min.js"></script>
 	<script >
-		function createPIE($) {
-			const sectors=[], svg=$('.diagram>svg');
-			let sum=0, start=0;
+		function createPIE() {
+			const PIE_SELECTOR = '.diagram',
+				ITEM_SELECTOR = '.data-list>div', // selectors below must be inside this element
+				VALUE_SELECTOR = 'dt', //background-color and content from this elements uses for diagram
+				DESCRIPTION_SELECTOR = 'dd'
+
+			const sectors=[], container=$(PIE_SELECTOR).empty(),
+			 svg=$('<svg><g class="pie-pointer">').appendTo(container),
+			 pointer=$('g', svg).html('<rect class="pie-line"/><rect class="pie-marker"/>'),
+			 angle=svg[0].createSVGAngle();
+			angle.valueAsString=container.css('--turn');
+			let sum=0, start0=0;
 			$('circle', svg).remove();
-			$('.data-list>div:visible').each((i,el)=>{
-				let val=parseFloat($('dt', el).text())/100;
+			$(ITEM_SELECTOR).each((i,el)=>{
+				let val=parseFloat($(VALUE_SELECTOR, el).text())/100;
 				sum+=val;
 				sectors.push({
 					val: val,
-					title: $('dd', el).html(),
+					text: $(DESCRIPTION_SELECTOR, el).html(),
 					el: el,
-					color: $('dt', el).css('background-color')
+					color: $(VALUE_SELECTOR, el).css('background-color')
 				})
 			});
 			sectors.sort((a,b)=>a.val-b.val)
 			.forEach((item,i)=>{
 				item.val/=sum;
-				const {val, title, el, color} = item;
+				const {val, text, el, color} = item, start=start0, isLast = i+1==sectors.length;
+				const title=$('<div class="pie-title">').hide().html(text).appendTo(container);
 				const sector=$('circle', '<svg><circle pathLength="1">').css({
 					stroke: color,
 					'stroke-dashoffset': -start,
-					'stroke-dasharray': val+', 1'
+					'stroke-dasharray': val+.0015+', '+(1-val-.001)
 				}).appendTo(svg);
-				start+=val;
+				sector.add(el).mouseenter(e=>{
+					let turn=angle.value/360;
+					const begin=start+turn,
+					 end=(+isLast||start+val)+turn,
+					 turn0=parseFloat(pointer.css('--turn'));
+					turn=isLast?end:distTo(begin, .5)<distTo(end, .5)?begin:end;
+					turn=((turn-turn0+.5)%1+1)%1-.5;
+					pointer.css({
+						'--turn': turn0+turn+'turn',
+						transition: Math.max(Math.abs(turn*1.5), .2)+'s'});
+				})
+				start0+=val;
+				if (isLast) sector.mouseenter();
 			})
+		}
+		function distTo(a, base=1){
+			a=Math.abs(a%base)
+			return Math.min(a, base-a)
 		}
 		//jQuery(createPIE);
 	</script>
@@ -63,8 +89,11 @@
 		}
 		/*Vidget style*/
 		.diagram {
-			--size: 325px;
+			--size: 326px;
 			--thickness: 50px;
+			--marker:  10px;
+			--turn: -45deg;
+			--color: #1C075F;
 			margin: auto;
 			width: var(--size);
 		}
@@ -76,21 +105,41 @@
     		height: var(--size)
 		}
 		.diagram svg circle {
+			--pixel: calc(1px / var(--size));
 			r: calc(50% - var(--thickness) / 2);
 			stroke-width: var(--thickness);
+			/* stroke-dasharray: 1; */
 			fill: none;
 			cx: 50%;
 			cy: 50%;
-			transform: rotate(-45deg);
+			transform: rotate(var(--turn));
 			transform-origin: 50% 50%;
 		}
+		.diagram .pie-pointer {
+			fill:  var(--color);
+			transform: rotate(var(--turn)) translateY(1px) translate(50%, 50%);
+			transform-origin: 50% 50%;
+			transition: .2s transform;
+			--turn: -.25turn;
+		}
+		.diagram .pie-line {
+			height: 1px;
+			width: var(--thickness);
+			x: 50%;
+			y: -0.5;
+		}
+		.diagram .pie-marker {
+			height: var(--marker);
+			width: var(--marker);
+			x: calc(50% + var(--thickness));
+			y: calc(var(--marker) / -2);
+		}
+
 	</style>
 </head>
 <body dir="rtl">
 	<h2>אפיקי השקעה</h2>
-	<div class="diagram">
-		<svg ></svg>
-	</div>
+	<div class="diagram"></div>
 	<dl class="data-list">
 		<div>
 			<dt style="background: rgb(28 7 95/19%);">2.3%</dt>
@@ -135,18 +184,23 @@
 	</dl>
 	<label>Generate <input type="number" min=4 max=10 value="10" id="generate"> items</label>
 	<script>
+		let list=$('.data-list'), items=$('>div', list)
+		list[0].querySelectorAll('dt').forEach((el, i)=>{
+			el.style.background=`rgb(${255-22.7*(i=i*7/9+3)} ${255-24.8*i} ${255-16*i})`
+		})
 		jQuery('#generate').on('input', function (e) {
 			if (!this.validity.valid) return;
 			const count=this.value;
-			$('.data-list>div').hide();
+			let divs=items.remove().clone();
+			$('>div', list).remove();
 			for (let i = 0, rest=100; i < count; i++) {
-				let val=i==count-1?rest:(Math.random()*rest*2/count);
-				$('.data-list>div:hidden').eq(parseInt(Math.random()*(10-i))).show()
+				let val=i==count-1?rest:(Math.random()*rest*2/count+.3);
+				divs.not(':visible').eq(parseInt(Math.random()*(10-i))).appendTo(list)
 				 .children('dt').text(+val.toFixed(1)+'%');
 				//console.log(rest, val);
 				rest-=val;
 			}
-			createPIE(jQuery);
+			createPIE();
 		}).trigger('input');
 	</script>
 </body>
