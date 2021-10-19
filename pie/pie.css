@@ -1,20 +1,21 @@
-.diagram {
+.pie-vidget {
 	--size: 326px;
 	--thickness: 50px;
 	--marker:  10px;
 	--turn: -45deg;
 	--color: #1C075F;
-	margin: auto;
-	width: var(--size);
+	/* margin: 10px auto; */
+	/* width: var(--size); */
+	padding: var(--thickness) 0;
 }
-.diagram svg {
+.pie-vidget svg {
 	display: block;
-	margin: var(--thickness) auto;
+	margin: auto;
 	overflow: visible;
 	width: var(--size);
-	height: var(--size)
+	height: var(--size);
 }
-.diagram svg circle {
+.pie-vidget svg circle {
 	--pixel: calc(1px / var(--size));
 	r: calc(50% - var(--thickness) / 2);
 	stroke-width: var(--thickness);
@@ -25,22 +26,60 @@
 	transform: rotate(var(--turn));
 	transform-origin: 50% 50%;
 }
-.diagram .pie-pointer {
-	fill:  var(--color);
+.pie-pointer {
 	transform: rotate(var(--turn)) translateY(1px) translate(50%, 50%);
 	transform-origin: 50% 50%;
 	transition: .2s transform;
 	--turn: -.25turn;
 }
-.diagram .pie-line {
+.pie-line {
 	height: 1px;
 	width: var(--thickness);
 	x: 50%;
 	y: -0.5;
 }
-.diagram .pie-marker {
+.pie-marker {
+	fill:  var(--color);
 	height: var(--marker);
 	width: var(--marker);
-	x: calc(50% + var(--thickness));
+	x: calc(50% + var(--thickness) - var(--marker)/2);
 	y: calc(var(--marker) / -2);
+	transform: rotate(calc(-1*var(--turn)));
+	transform-origin: calc(50% + var(--thickness)) 0;
+	transition: inherit;
+}
+.pie-title {
+	position: absolute;
+	left: 0;
+	top: 0;
+	/*display: flex;
+	transition: all .2s, transform 0s;
+	align-items: flex-end;*/
+	display: flex;
+	text-align: start;
+	direction: ltr;
+	/* line-height: .5em; */
+	font-size: 1.2em;
+	max-width: var(--size);
+	align-items: flex-end;
+	transition: all .2s, transform 0s;
+}
+.pie-title.pie-left {
+	direction: rtl;
+}
+.pie-title:not(.visible) {
+	opacity: 0;
+	visibility: hidden;
+}
+.pie-title>div{
+	display: inline-block;
+	vertical-align: baseline;
+	line-height: 0.9em;
+	margin: -.14em .16em;
+	padding-top: .08em;
+}
+.pie-title>div:first-child {
+	font-size: 2.2em;
+	/* line-height: 0.75em; */
+	/* margin: -0.2em .1em; */
 }

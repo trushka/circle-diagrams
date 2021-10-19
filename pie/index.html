@@ -13,6 +13,10 @@
 			text-align: center;
 			color: #1C075F;
 		}
+		.small {
+			font-size: .6em;
+			line-height: 1em;
+		}
 		.data-list {
 			display: flex;
 			justify-content: space-between;
@@ -38,7 +42,7 @@
 </head>
 <body dir="rtl">
 	<h2>אפיקי השקעה</h2>
-	<div class="diagram"></div>
+	<div class="pie-vidget"></div>
 	<dl class="data-list">
 		<div>
 			<dt>2.3%</dt>
@@ -93,9 +97,9 @@
 			let divs=items.clone().appendTo(list);
 			$('>div', list).hide();
 			for (let i = 0, rest=100; i < count; i++) {
-				let val=i==count-1?rest:(Math.random()*rest*2/count+.3);
+				let val=i==count-1?rest:(Math.random()*rest*2/count+.7);
 				divs.not(':visible').eq(parseInt(Math.random()*(10-i))).show()
-				 .children('dt').text(+val.toFixed(1)+'%');
+				 .children('dt').html(+val.toFixed(1)+'<span class="small">%</span>');
 				//console.log(rest, val);
 				rest-=val;
 			}
