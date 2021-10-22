@@ -1,4 +1,6 @@
 function createPIE() {
+	if (document.readyState!='complete' && $(window).one('load', createPIE)) return;
+
 	const PIE_SELECTOR = '.pie-vidget',
 		ITEM_SELECTOR = '.data-list>div', // selectors below must be inside this element
 		VALUE_SELECTOR = 'dt', //background-color and content from this elements uses for diagram
@@ -30,8 +32,8 @@ function createPIE() {
 		 title=$('<div class="pie-title">').html(`<div>${valText}</div><div>${text}</div>`).appendTo(container),
 		 sector=$('circle', '<svg><circle pathLength="1">').css({
 			stroke: color,
-			'stroke-dashoffset': -start,
-			'stroke-dasharray': val+.0015+', '+(1-val-.001)
+			'--start': start-isLast*.001+'',
+			'--val': val+.0015+''
 		}).appendTo(svg);
 		sector.add(el).mouseenter(hover)
 		function hover() {
@@ -67,8 +69,9 @@ function createPIE() {
 			$('.pie-title.visible').not(title[0]).removeClass('visible');
 		}
 		start0+=val;
-		if (isLast) document.readyState=='complete'?hover():$(window).one('load', hover);
+		if (isLast) hover();
 	})
+	svg.addClass('complete');
 }
 function distTo(a, base=1){
 	a=Math.abs(a%base)

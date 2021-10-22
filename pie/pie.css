@@ -14,17 +14,27 @@
 	overflow: visible;
 	width: var(--size);
 	height: var(--size);
+	--scale: .001;
+	--start:  0;
 }
 .pie-vidget svg circle {
 	--pixel: calc(1px / var(--size));
 	r: calc(50% - var(--thickness) / 2);
 	stroke-width: var(--thickness);
-	/* stroke-dasharray: 1; */
+	stroke-dasharray: 0, var(--start), var(--val), 1;
 	fill: none;
 	cx: 50%;
 	cy: 50%;
 	transform: rotate(var(--turn));
 	transform-origin: 50% 50%;
+	transition: .8s ease-in-out;
+}
+.pie-vidget svg:not(.complete) circle {
+	--start: 0 !important;
+	--val: 0.0015 !important;
+}
+.pie-vidget svg circle:last-of-type {
+	transform: rotate(var(--turn)) rotate(.001turn);
 }
 .pie-pointer {
 	transform: rotate(var(--turn)) translateY(1px) translate(50%, 50%);
@@ -52,9 +62,6 @@
 	position: absolute;
 	left: 0;
 	top: 0;
-	/*display: flex;
-	transition: all .2s, transform 0s;
-	align-items: flex-end;*/
 	display: flex;
 	text-align: start;
 	direction: ltr;
