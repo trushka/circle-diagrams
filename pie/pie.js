@@ -36,7 +36,7 @@ function createPIE() {
 			'--start': start-isLast*.001+'',
 			'--val': val+.0015+''
 		}).appendTo(svg);
-		sector.add(el).on('moseenter touchstart', hover)
+		sector.add(el).on('mouseenter touchstart', hover)
 		function hover() {
 			hovered=i;
 			let turn=angle.value/360;
