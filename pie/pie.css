@@ -1,20 +1,27 @@
 .pie-vidget {
-	--size: 326px;
-	--thickness: 50px;
-	--marker:  10px;
+	--size: min(326px, 33.33vw);
+	font-size: max(calc(var(--size) / 17), 15px);
+	--thickness: min(2.5em, 5vw);
+	--marker:  .5em;
 	--turn: -45deg;
 	--color: #1C075F;
 	/* margin: 10px auto; */
-	/* width: var(--size); */
+	height: var(--size);
 	padding: var(--thickness) 0;
+	position: relative;
 }
-.pie-vidget svg {
+/*@media screen and (max-width: 900px) {
+	.pie-vidget {
+		--size: 186px;
+		--thickness: 25px;
+	}
+}
+*/.pie-vidget svg {
 	display: block;
 	margin: auto;
 	overflow: visible;
 	width: var(--size);
 	height: var(--size);
-	--scale: .001;
 	--start:  0;
 }
 .pie-vidget svg circle {
@@ -37,9 +44,8 @@
 	transform: rotate(var(--turn)) rotate(.001turn);
 }
 .pie-pointer {
-	transform: rotate(var(--turn)) translateY(1px) translate(50%, 50%);
+	transform: rotate(var(--turn)) translateY(.5px) translate(50%, 50%);
 	transform-origin: 50% 50%;
-	transition: .2s transform;
 	--turn: -.25turn;
 }
 .pie-line {
@@ -49,7 +55,7 @@
 	y: -0.5;
 }
 .pie-marker {
-	fill:  var(--color);
+	/* fill:  var(--color); */
 	height: var(--marker);
 	width: var(--marker);
 	x: calc(50% + var(--thickness) - var(--marker)/2);
@@ -66,9 +72,8 @@
 	text-align: start;
 	direction: ltr;
 	/* line-height: .5em; */
-	font-size: 1.2em;
 	max-width: var(--size);
-	align-items: flex-end;
+	align-items: baseline;
 	transition: all .2s, transform 0s;
 }
 .pie-title.pie-left {
@@ -76,17 +81,20 @@
 }
 .pie-title:not(.visible) {
 	opacity: 0;
-	visibility: hidden;
+	/* visibility: hidden; */
 }
 .pie-title>div{
+	line-height: 0.85em;
+	margin: -.14em .16em;
+}
+.pie-title>div div{
 	display: inline-block;
 	vertical-align: baseline;
-	line-height: 0.9em;
-	margin: -.14em .16em;
-	padding-top: .08em;
 }
 .pie-title>div:first-child {
-	font-size: 2.2em;
+	font-size: 2.3em;
+	font-weight: 500;
 	/* line-height: 0.75em; */
 	/* margin: -0.2em .1em; */
+	letter-spacing: -.012em;
 }

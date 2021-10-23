@@ -11,7 +11,7 @@ function createPIE() {
 	 pointer=$('g', svg).html('<rect class="pie-line"/><rect class="pie-marker"/>'),
 	 angle=svg[0].createSVGAngle();
 	angle.valueAsString=container.css('--turn');
-	let sum=0, start0=0;
+	let sum=0, start0=0, hovered;
 	$('circle', svg).remove();
 	$(ITEM_SELECTOR).each((i,el)=>{
 		let valText=$(VALUE_SELECTOR, el).html();
@@ -29,14 +29,16 @@ function createPIE() {
 		const {val, valText, text, el, color} = item,
 		 start=start0,
 		 isLast = i+1==sectors.length,
-		 title=$('<div class="pie-title">').html(`<div>${valText}</div><div>${text}</div>`).appendTo(container),
+		 title=$('<div class="pie-title">').html(`<div>${valText}</div><div><div>${text}</div></div>`)
+		  .css('color', color).appendTo(container),
 		 sector=$('circle', '<svg><circle pathLength="1">').css({
 			stroke: color,
 			'--start': start-isLast*.001+'',
 			'--val': val+.0015+''
 		}).appendTo(svg);
-		sector.add(el).mouseenter(hover)
+		sector.add(el).on('moseenter touchstart', hover)
 		function hover() {
+			hovered=i;
 			let turn=angle.value/360;
 			const begin=start+turn-.0002,
 			 end=(+isLast||start+val)+turn-.0005,
@@ -49,19 +51,29 @@ function createPIE() {
 			 up = Math.abs(absTurn)>.124 && Math.abs(turn-(left?begin:end))<.002 || Math.abs(absTurn-.5)<.125;
 			//console.log( absTurn, up)
 
-			turn=((turn-turn0+.5)%1+1)%1-.5;
+			turn=((turn-turn0+.5)%1+1)%1-.5
+			let near = Math.abs(turn)<.0015;
 			pointer.css({
-				'--turn': turn0+turn+'turn',
+				'--turn': turn0+turn*(1+near*3)+'turn',
 				fill: color,
-				transition: Math.max(Math.abs(turn*1.5), .2)+'s'
+				transition: Math.max(Math.abs(turn*1.5), .2-near*.1)+'s'
 			}).off('transitionend').on('transitionend', e=>{
+				if (e.target!=pointer[0] || e.originalEvent?.propertyName=='fill' ) return
+				if (near) {
+					pointer.css({
+						'--turn': turn0+turn+'turn',
+						transition: '.2s cubic-bezier(.1, 0, .35, 1)'
+					});
+					near=0;
+					return
+				}
 				const rect=title[0].getBoundingClientRect(),
 				 svgRect=svg[0].getBoundingClientRect(),
 				 divRect=container[0].getBoundingClientRect(),
 				 srcRect=pointer[0].querySelector('.pie-marker').getBoundingClientRect(),
 				 side=left?'left':'right',
-				 x=srcRect[side],
-				 y=srcRect[up?'bottom':'top'];
+				 x=srcRect[side]-divRect.left,
+				 y=srcRect[up?'bottom':'top']-divRect.top;
 				title.css({
 					transform: `translate(${x}px, ${y}px) translate(${-left*100}%, ${-up*100}%)`
 				}).addClass('visible')[left?'addClass':'removeClass']('pie-left')
@@ -72,6 +84,11 @@ function createPIE() {
 		if (isLast) hover();
 	})
 	svg.addClass('complete');
+	let fr;
+	$(window).on('resize', e=>{
+		svg.children().appendTo(svg);
+		pointer.trigger('transitionend');
+	})
 }
 function distTo(a, base=1){
 	a=Math.abs(a%base)
