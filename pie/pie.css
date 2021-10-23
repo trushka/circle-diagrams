@@ -81,7 +81,7 @@
 }
 .pie-title:not(.visible) {
 	opacity: 0;
-	/* visibility: hidden; */
+	visibility: hidden; 
 }
 .pie-title>div{
 	line-height: 0.85em;

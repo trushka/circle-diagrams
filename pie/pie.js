@@ -58,7 +58,7 @@ function createPIE() {
 				fill: color,
 				transition: Math.max(Math.abs(turn*1.5), .2-near*.1)+'s'
 			}).off('transitionend').on('transitionend', e=>{
-				if (e.target!=pointer[0] || e.originalEvent?.propertyName=='fill' ) return
+				if (e.target!=pointer[0] || e.originalEvent?.propertyName=='fill' ) return;
 				if (near) {
 					pointer.css({
 						'--turn': turn0+turn+'turn',
