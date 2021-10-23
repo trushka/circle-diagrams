@@ -38,6 +38,7 @@ function createPIE() {
 		}).appendTo(svg);
 		sector.add(el).on('mouseenter touchstart', hover)
 		function hover() {
+			if (hovered==i) return;
 			hovered=i;
 			let turn=angle.value/360;
 			const begin=start+turn-.0002,
