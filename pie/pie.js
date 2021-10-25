@@ -7,8 +7,10 @@ function createPIE() {
 		DESCRIPTION_SELECTOR = 'dd'
 
 	const sectors=[], container=$(PIE_SELECTOR).empty(),
-	 svg=$('<svg><g class="pie-pointer">').appendTo(container),
-	 pointer=$('g', svg).html('<rect class="pie-line"/><rect class="pie-marker"/>'),
+	 svg=$('<svg><g class="pie-pointer"><rect class="pie-line"/><rect class="pie-marker"/>').appendTo(container),
+	 pointer=$('g', svg),
+	 line=$('.pie-line', svg),
+	 marker=$('.pie-marker', svg),
 	 angle=svg[0].createSVGAngle();
 	angle.valueAsString=container.css('--turn');
 	let sum=0, start0=0, hovered;
@@ -31,64 +33,75 @@ function createPIE() {
 		 isLast = i+1==sectors.length,
 		 title=$('<div class="pie-title">').html(`<div>${valText}</div><div><div>${text}</div></div>`)
 		  .css('color', color).appendTo(container),
-		 sector=$('circle', '<svg><circle pathLength="1">').css({
+		 sector=item.sector=$('circle', '<svg><circle pathLength="1">').css({
 			stroke: color,
 			'--start': start-isLast*.001+'',
 			'--val': val+.0015+''
 		}).appendTo(svg);
-		sector.add(el).on('mouseenter touchstart', hover)
+
+		sector.add(el).on('mouseenter touchstart', item.hover=hover);
 		function hover() {
 			if (hovered==i) return;
 			hovered=i;
-			let turn=angle.value/360;
-			const begin=start+turn-.0002,
-			 end=(+isLast||start+val)+turn-.0005,
-			 turn0=parseFloat(pointer.css('--turn'));
-
-			turn=isLast?end:distTo(begin, .5)<distTo(end, .5)?begin:end-.0008;
-
-			const absTurn = ((turn+.25)%1+1)%1,
+			const turnGlobal=angle.value/360,
+			 begin=start+turnGlobal-.0002,
+			 end=(+isLast||start+val)+turnGlobal-.0005,
+			 turn0=parseFloat(pointer.css('--turn')),
+			 turn1=isLast?end:distTo(begin, .5)<distTo(end, .5)?begin:end-.0008,
+			 absTurn = ((turn1+.25)%1+1)%1,
+			 turn=((turn1-turn0+.5)%1+1)%1-.5,
+			 near = Math.abs(turn)<.0015,
+			 duration=Math.max(Math.abs(turn*1.5), .2-near*.1),
 			 left = absTurn>.5,
-			 up = Math.abs(absTurn)>.124 && Math.abs(turn-(left?begin:end))<.002 || Math.abs(absTurn-.5)<.125;
-			//console.log( absTurn, up)
+			 up = Math.abs(absTurn)>.124 && Math.abs(turn1-(left?begin:end))<.002 || Math.abs(absTurn-.5)<.125,
+			 r0=svg[0].getBoundingClientRect().width/2,
+			 r=r0+line.width(),
+			 width=container[0].getBoundingClientRect().width,
+			 side=width<r0*5.85,
+			 center=side?r0:width/2;
 
-			turn=((turn-turn0+.5)%1+1)%1-.5
-			let near = Math.abs(turn)<.0015;
 			pointer.css({
 				'--turn': turn0+turn*(1+near*3)+'turn',
 				fill: color,
-				transition: Math.max(Math.abs(turn*1.5), .2-near*.1)+'s'
-			}).off('transitionend').on('transitionend', e=>{
-				if (e.target!=pointer[0] || e.originalEvent?.propertyName=='fill' ) return;
-				if (near) {
-					pointer.css({
-						'--turn': turn0+turn+'turn',
-						transition: '.2s cubic-bezier(.1, 0, .35, 1)'
-					});
-					near=0;
-					return
-				}
-				const rect=title[0].getBoundingClientRect(),
-				 svgRect=svg[0].getBoundingClientRect(),
-				 divRect=container[0].getBoundingClientRect(),
-				 srcRect=pointer[0].querySelector('.pie-marker').getBoundingClientRect(),
-				 side=left?'left':'right',
-				 x=srcRect[side]-divRect.left,
-				 y=srcRect[up?'bottom':'top']-divRect.top;
-				title.css({
-					transform: `translate(${x}px, ${y}px) translate(${-left*100}%, ${-up*100}%)`
-				}).addClass('visible')[left?'addClass':'removeClass']('pie-left')
+				transition: duration+'s'
+			}).off('transitionend');
+
+			if (near) pointer.one('transitionend', e=>{
+				pointer.css({
+					'--turn': turn0+turn+'turn',
+					transition: '.2s cubic-bezier(.1, 0, .35, 1)'
+				});
 			});
+
+			// $('circle', svg).css({filter: '', zIndex:''});
+			// sector.appendTo(svg).css({filter: 'drop-shadow(0 0 3px '+color+')', zIndex:-1});
+
+			svg.css('transform', `translateX(${(left?side:-side)*(width/2-r0)}px)`);
+
 			$('.pie-title.visible').not(title[0]).removeClass('visible');
+			title.css({
+				[left?'right':'left']: Math.cos(turn1*Math.PI*2)*(left?-r:r)+center,
+				[up?'bottom':'top']: Math.sin(turn1*Math.PI*2)*(up?-r:r)+r0,
+				// top: *r,
+				transitionDelay: Math.max((duration-.4)*(1+.2*side), .1)+'s'
+			})[left?'addClass':'removeClass']('pie-left').addClass('visible');
+			//console.log(turn1)
 		}
 		start0+=val;
 		if (isLast) hover();
 	})
+
 	svg.addClass('complete');
-	let fr;
+	let timeout;
 	$(window).on('resize', e=>{
-		svg.children().appendTo(svg);
-		pointer.trigger('transitionend');
+		clearTimeout(timeout);
+		timeout=setTimeout(()=>{
+			console.log($(window).width())
+			const i=hovered;
+			hovered='-';
+			container.append(svg.detach());
+			sectors[i].hover();
+		}, 10)
 	})
 }
 function distTo(a, base=1){

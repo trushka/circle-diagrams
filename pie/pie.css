@@ -1,14 +1,20 @@
 .pie-vidget {
-	--size: min(326px, 33.33vw);
+	--size: min(326px, max(186px, 33.33vw));
 	font-size: max(calc(var(--size) / 17), 15px);
-	--thickness: min(2.5em, 5vw);
+	--thickness: min(2.4em, calc(var(--size) / 6.5));
 	--marker:  .5em;
 	--turn: -45deg;
 	--color: #1C075F;
-	/* margin: 10px auto; */
-	height: var(--size);
-	padding: var(--thickness) 0;
+	margin: var(--thickness) auto;
+	height: var(
+	--size);
+	/* padding: var(
+	--thickness) 0; */
 	position: relative;
+	/* width: var(
+	--size); */
+	transition: .2s margin;
+	/* left: -100px; */
 }
 /*@media screen and (max-width: 900px) {
 	.pie-vidget {
@@ -23,6 +29,7 @@
 	width: var(--size);
 	height: var(--size);
 	--start:  0;
+	transition: 0.4s;
 }
 .pie-vidget svg circle {
 	--pixel: calc(1px / var(--size));
@@ -66,35 +73,39 @@
 }
 .pie-title {
 	position: absolute;
-	left: 0;
-	top: 0;
+	/* margin: 50%; */
+	padding: 0 .2em;
 	display: flex;
 	text-align: start;
 	direction: ltr;
 	/* line-height: .5em; */
 	max-width: var(--size);
 	align-items: baseline;
-	transition: all .2s, transform 0s;
+	transition: opacity .2s, visibility .2s;
+	height: 1.1em;
+	/* outline: 1px solid; */
 }
 .pie-title.pie-left {
 	direction: rtl;
 }
 .pie-title:not(.visible) {
 	opacity: 0;
-	visibility: hidden; 
+	visibility: hidden;
+	transition-delay: 0s !important;
 }
 .pie-title>div{
 	line-height: 0.85em;
-	margin: -.14em .16em;
+	margin: -0.2em .16em;
 }
 .pie-title>div div{
 	display: inline-block;
 	vertical-align: baseline;
+	margin: -2em 0;
 }
 .pie-title>div:first-child {
 	font-size: 2.3em;
 	font-weight: 500;
-	/* line-height: 0.75em; */
+	/* line-height: 0.4em; */
 	/* margin: -0.2em .1em; */
 	letter-spacing: -.012em;
 }
