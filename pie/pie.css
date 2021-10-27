@@ -1,3 +1,7 @@
+body {
+	overflow-x: hidden;
+}
+
 .pie-vidget {
 	--size: min(326px, max(186px, 33.33vw));
 	font-size: max(calc(var(--size) / 17), 15px);
@@ -29,30 +33,53 @@
 	width: var(--size);
 	height: var(--size);
 	--start:  0;
+	isolation: isolate;
+}
+.pie-vidget svg.complete {
 	transition: 0.4s;
 }
 .pie-vidget svg circle {
-	--pixel: calc(1px / var(--size));
 	r: calc(50% - var(--thickness) / 2);
 	stroke-width: var(--thickness);
 	stroke-dasharray: 0, var(--start), var(--val), 1;
 	fill: none;
+	stroke: var(--color);
 	cx: 50%;
 	cy: 50%;
 	transform: rotate(var(--turn));
 	transform-origin: 50% 50%;
-	transition: .8s ease-in-out;
+	transition: .8s ease-in-out, opacity .2s, mix-blend-mode 0s 0.5s;
 }
-.pie-vidget svg:not(.complete) circle {
+.pie-vidget .pie-sectors {
+	mix-blend-mode: screen;
+}
+.pie-vidget .pie-glow circle{
+	filter: drop-shadow(0 0 0.2em #fff8) drop-shadow(0 0 .3em var(--color)) blur(0px);
+	stroke: #000;
+	transition: opacity .4s;
+	opacity: 0;
+	stroke-width: calc(var(--thickness) - 1px);
+}
+.pie-vidget .pie-sectors circle.hover+*, .pie-vidget .pie-sectors circle:last-child{
+	mix-blend-mode: lighten;
+	transition-delay: 0s;
+}
+.pie-vidget .pie-glow circle.hover{
+	transition: opacity .3s;
+	opacity: 1;
+}
+.pie-vidget svg:not(.complete) .pie-sectors circle {
 	--start: 0 !important;
 	--val: 0.0015 !important;
+	opacity: 0
 }
-.pie-vidget svg circle:last-of-type {
+.pie-vidget svg g circle:last-child {
 	transform: rotate(var(--turn)) rotate(.001turn);
 }
 .pie-pointer {
 	transform: rotate(var(--turn)) translateY(.5px) translate(50%, 50%);
 	transform-origin: 50% 50%;
+	opacity: 0;
 	--turn: -.25turn;
 }
 .pie-line {

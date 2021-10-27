@@ -7,13 +7,15 @@ function createPIE() {
 		DESCRIPTION_SELECTOR = 'dd'
 
 	const sectors=[], container=$(PIE_SELECTOR).empty(),
-	 svg=$('<svg><g class="pie-pointer"><rect class="pie-line"/><rect class="pie-marker"/>').appendTo(container),
-	 pointer=$('g', svg),
+	 svg=$('<svg><g class="pie-pointer"/><g class="pie-glow"/><g class="pie-sectors"/>').appendTo(container),
+	 pointer=$('.pie-pointer', svg).html('<rect class="pie-line"/><rect class="pie-marker"/>'),
 	 line=$('.pie-line', svg),
 	 marker=$('.pie-marker', svg),
 	 angle=svg[0].createSVGAngle();
 	angle.valueAsString=container.css('--turn');
-	let sum=0, start0=0, hovered;
+
+	let sum=0, start0=0, hovered=-1;
+
 	$('circle', svg).remove();
 	$(ITEM_SELECTOR).each((i,el)=>{
 		let valText=$(VALUE_SELECTOR, el).html();
@@ -32,17 +34,20 @@ function createPIE() {
 		 start=start0,
 		 isLast = i+1==sectors.length,
 		 title=$('<div class="pie-title">').html(`<div>${valText}</div><div><div>${text}</div></div>`)
-		  .css('color', color).appendTo(container),
+		  .appendTo(container),//.css('color', color)
 		 sector=item.sector=$('circle', '<svg><circle pathLength="1">').css({
-			stroke: color,
+			'--color': color,
 			'--start': start-isLast*.001+'',
 			'--val': val+.0015+''
-		}).appendTo(svg);
+		 }).appendTo('.pie-sectors', svg),
+		 glow=sector.clone().appendTo('.pie-glow', svg);
 
 		sector.add(el).on('mouseenter touchstart', item.hover=hover);
-		function hover() {
-			if (hovered==i) return;
-			hovered=i;
+		function hover(delay) {
+			if (hovered==i || hovered==-1) return;
+			delay=+!isNaN(delay)&&delay;
+			hovered=delay?-1:i;
+
 			const turnGlobal=angle.value/360,
 			 begin=start+turnGlobal-.0002,
 			 end=(+isLast||start+val)+turnGlobal-.0005,
@@ -61,9 +66,10 @@ function createPIE() {
 			 center=side?r0:width/2;
 
 			pointer.css({
+				opacity: 1,
 				'--turn': turn0+turn*(1+near*3)+'turn',
 				fill: color,
-				transition: duration+'s'
+				transition: duration+'s '+delay+'s'
 			}).off('transitionend');
 
 			if (near) pointer.one('transitionend', e=>{
@@ -73,8 +79,17 @@ function createPIE() {
 				});
 			});
 
-			// $('circle', svg).css({filter: '', zIndex:''});
-			// sector.appendTo(svg).css({filter: 'drop-shadow(0 0 3px '+color+')', zIndex:-1});
+			const ready=$('circle.hover', svg).removeClass('hover')[0];//.css({filter: ''});
+			glow.add(sector).addClass('hover');//.css({filter: 'drop-shadow(0 0 3px '+color+')', transition: '.3s'});
+			if (!ready) {
+				glow.css('opacity', 0);
+				sector.on('transitionend', function tr(e) {
+					if (e.originalEvent.propertyName=='opacity') return;
+					glow.css('opacity', '');
+					hovered=i;
+					sector.off('transitionend', tr)
+				})
+			}
 
 			svg.css('transform', `translateX(${(left?side:-side)*(width/2-r0)}px)`);
 
@@ -83,26 +98,32 @@ function createPIE() {
 				[left?'right':'left']: Math.cos(turn1*Math.PI*2)*(left?-r:r)+center,
 				[up?'bottom':'top']: Math.sin(turn1*Math.PI*2)*(up?-r:r)+r0,
 				// top: *r,
-				transitionDelay: Math.max((duration-.4)*(1+.2*side), .1)+'s'
+				transitionDelay: Math.max((duration-.4)*(1+.2*side), .1)+delay+'s'
 			})[left?'addClass':'removeClass']('pie-left').addClass('visible');
 			//console.log(turn1)
 		}
 		start0+=val;
-		if (isLast) hover();
 	})
 
-	svg.addClass('complete');
+	function showPie() {
+		let rect=svg[0].getBoundingClientRect();
+		if (rect.bottom<100 || rect.top>innerHeight-100) return;
+		hovered=sectors.length;
+		sectors[hovered-1].hover(.7);
+		setTimeout(()=>{svg.addClass('complete')}, 10);
+		$(window).off('scroll', showPie);
+	}
+	showPie();
 	let timeout;
 	$(window).on('resize', e=>{
+		if (!svg[0].parentNode) return;
 		clearTimeout(timeout);
 		timeout=setTimeout(()=>{
 			console.log($(window).width())
-			const i=hovered;
-			hovered='-';
-			container.append(svg.detach());
-			sectors[i].hover();
+			svg.prependTo(container);//.detach()
+			requestAnimationFrame(()=>sectors[hovered++].hover());
 		}, 10)
-	})
+	}).on('scroll', showPie)
 }
 function distTo(a, base=1){
 	a=Math.abs(a%base)

@@ -15,6 +15,9 @@
 			text-align: center;
 			color: #1C075F;
 		}
+		body {
+			margin-top: 110vh;
+		}
 		.small {
 			font-size: .6em;
 			line-height: 1em;
@@ -93,8 +96,10 @@
 	<script>
 		let list=$('.data-list'), items=$('>div', list);
 		list[0].querySelectorAll('dt').forEach((el, i)=>{
-			el.style.background=`rgb(${255-22.7*(i=i*7/9+3)} ${255-24.8*i} ${255-16*i})`
+			i=10-i*7/(items.length-1);
+			el.style.background=`rgb(${255-22.7*i} ${255-24.8*i} ${255-16*i})`
 		})
+
 		jQuery('#generate').on('input', function (e) {
 			if (!this.validity.valid) return;
 			const count=this.value;
