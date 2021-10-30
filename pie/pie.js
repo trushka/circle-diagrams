@@ -29,6 +29,7 @@ function createPIE() {
 	});
 	sectors.sort((a,b)=>a.val-b.val)
 	.forEach((item,i)=>{
+		if (Math.abs(start0-.25) < 0.0001) start0+=0.0001;
 		item.val/=sum;
 		const {val, valText, text, el, color} = item,
 		 start=start0,
