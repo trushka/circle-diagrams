@@ -10,13 +10,14 @@
 	<style type="text/css">
 		@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;500;600;700;800&display=swap');
 		:root {
-			background: #fff;
+			background: #D7E1EC;
 			font: 20px/1.12 Assistant, sans-serif;
-			text-align: center;
+			/* text-align: center; */
 			color: #1C075F;
 		}
-		body {
-			margin-top: 110vh;
+		.content {
+			overflow: hidden;
+			text-align: center;
 		}
 		.small {
 			font-size: .6em;
@@ -27,73 +28,68 @@
 			display: flex;
 			justify-content: space-between;
 			flex-wrap: wrap;
+			text-align: start;
 		}
+		h3 {text-align: start;}
 
 		.data-list div {
-			flex-basis: 150px;
-			text-align: center;
-			flex-grow: 1;
+			/* flex-basis: 150px; */
+			text-align: start;
+			/* flex-grow: 1; */
+			margin-right: 2em;
 		}
 		.data-list dt {
-			width: 4em;
 			line-height: 2em;
 			margin: auto;
-			background: hsl(254deg 86% 20%);
 			font-weight: bold;
-			color: #fff;
 		}
 		.data-list dd {
-			margin: .5em;
+			margin: 0;
+		}
+		.data-list dd::before {
+			content: '';
+			display: inline-block;
+			vertical-align: middle;
+			font-size: .65em;
+			height: 1em;
+			width: 2em;
+			background: var(--color);
+			margin-right: -2em;
+			border-radius: .5em;
+			position: relative;
+			left: .9em;
 		}
 	</style>
 </head>
 <body dir="rtl">
-	<h2>אפיקי השקעה</h2>
-	<div class="pie-vidget"></div>
+<section class="content">
+	<h1>צ׳ק אפ דיגיטלי</h1>
+		<div class="circle-widget pie"></div>
+	<h3>פילוח המוצרים שלך</h3>
 	<dl class="data-list">
-		<div>
-			<dt>2.3%</dt>
-			<dd>קרנות נאמנות</dd>
+		<div style="--color: #FCD844">
+			<dd>קרן פנסיה</dd>
+			<dt>972,878 ₪</dt>
 		</div>
-		<div>
-			<dt>5.1%</dt>
-			<dd>אגרות חוב מיועדות</dd>
+		<div style="--color: #4FCEC7">
+			<dd>קרן השתלמות</dd>
+			<dt>249,093 ₪</dt>
 		</div>
-		<div>
-			<dt>7%</dt>
-			<dd>נכסים אחרים</dd>
+		<div style="--color: #CFAE31">
+			<dd>ביטוח מנהלים</dd>
+			<dt>51,674 ₪</dt>
 		</div>
-		<div>
-			<dt>18%</dt>
-			<dd>פיקדונות</dd>
+		<div style="--color: #F1ACA3">
+			<dd>קופת גמל</dd>
+			<dt>25,698 ₪</dt>
 		</div>
-		<div>
-			<dt>2.3%</dt>
-			<dd>מזומנים ושווי מזומנים</dd>
-		</div>
-		<div>
-			<dt>5.1%</dt>
-			<dd>מניות, אופציות וקרנות סל מנייתיות</dd>
-		</div>
-		<div>
-			<dt>7%</dt>
-			<dd>אג"ח קונצרניות לא סחירות</dd>
-		</div>
-		<div>
-			<dt>18%</dt>
-			<dd>הלוואות</dd>
-		</div>
-		<div>
-			<dt>25.6%</dt>
-			<dd>מניות, אופציות, וקרנות סל מנייתיות</dd>
-		</div>
-		<div>
-			<dt>42%</dt>
-			<dd>אג״ח ממשלתיות סחירות</dd>
+		<div style="--color: #A6DC0D">
+			<dd>קופת גמל להשקעה</dd>
+			<dt>100 ₪</dt>
 		</div>
 	</dl>
-	<label>Generate <input type="number" min=4 max=10 value="10" id="generate"> items</label>
-	<script>
+	<!--label>Generate <input type="number" min=4 max=10 value="10" id="generate"> items</label-->
+	<script>/*
 		let list=$('.data-list'), items=$('>div', list);
 		list[0].querySelectorAll('dt').forEach((el, i)=>{
 			i=10-i*7/(items.length-1);
@@ -116,5 +112,6 @@
 			createPIE();
 		}).trigger('input');
 	</script>
+</section>
 </body>
 </html>

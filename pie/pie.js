@@ -1,132 +1,95 @@
-function createPIE() {
-	if (document.readyState!='complete' && $(window).one('load', createPIE)) return;
+$.fn.initCirkle=function() {
+	var size_chart=400,
+		size_pie=340,
+		thickness_chart=10,
+		thickness_pie=24,
+		dots_dist=15,
+		offset=2.5,
+		min=3;
 
-	const PIE_SELECTOR = '.pie-vidget',
-		ITEM_SELECTOR = '.data-list>div', // selectors below must be inside this element
-		VALUE_SELECTOR = 'dt', //background-color and content from this elements uses for diagram
-		DESCRIPTION_SELECTOR = 'dd'
+	if (!$('#c_filter')[0]) $('body').prepend(`<svg style="position:absolute; visibility:hidden">
+		<style>
+		/*set filter for g instead of the .arc to apply inner shadow to the whole cgat whith the dot*/
 
-	const sectors=[], container=$(PIE_SELECTOR).empty(),
-	 svg=$('<svg><g class="pie-pointer"/><g class="pie-glow"/><g class="pie-sectors"/>').appendTo(container),
-	 pointer=$('.pie-pointer', svg).html('<rect class="pie-line"/><rect class="pie-marker"/>'),
-	 line=$('.pie-line', svg),
-	 marker=$('.pie-marker', svg),
-	 angle=svg[0].createSVGAngle();
-	angle.valueAsString=container.css('--turn');
-
-	let sum=0, start0=0, hovered=-1;
-
-	$('circle', svg).remove();
-	$(ITEM_SELECTOR).each((i,el)=>{
-		let valText=$(VALUE_SELECTOR, el).html();
-		 val=parseFloat(valText)/100;
-		 sum+=val;
-		sectors.push({
-			val, valText, el,
-			text: $(DESCRIPTION_SELECTOR, el).html(),
-			color: $(VALUE_SELECTOR, el).css('background-color')
-		})
-	});
-	sectors.sort((a,b)=>a.val-b.val)
-	.forEach((item,i)=>{
-		if (Math.abs(start0-.25) < 0.0001) start0+=0.0001;
-		item.val/=sum;
-		const {val, valText, text, el, color} = item,
-		 start=start0,
-		 isLast = i+1==sectors.length,
-		 title=$('<div class="pie-title">').html(`<div>${valText}</div><div><div>${text}</div></div>`)
-		  .appendTo(container),//.css('color', color)
-		 sector=item.sector=$('circle', '<svg><circle pathLength="1">').css({
-			'--color': color,
-			'--start': start-isLast*.001+'',
-			'--val': val+.0015+''
-		 }).appendTo('.pie-sectors', svg),
-		 glow=sector.clone().appendTo('.pie-glow', svg);
-
-		sector.add(el).on('mouseenter touchstart', item.hover=hover);
-		function hover(delay) {
-			if (hovered==i || hovered==-1) return;
-			delay=+!isNaN(delay)&&delay;
-			hovered=delay?-1:i;
-
-			const turnGlobal=angle.value/360,
-			 begin=start+turnGlobal-.0002,
-			 end=(+isLast||start+val)+turnGlobal-.0005,
-			 turn0=parseFloat(pointer.css('--turn')),
-			 turn1=isLast?end:distTo(begin, .5)<distTo(end, .5)?begin:end-.0008,
-			 absTurn = ((turn1+.25)%1+1)%1,
-			 turn=((turn1-turn0+.5)%1+1)%1-.5,
-			 near = Math.abs(turn)<.0015,
-			 duration=Math.max(Math.abs(turn*1.5), .2-near*.1),
-			 left = absTurn>.5,
-			 up = Math.abs(absTurn)>.124 && Math.abs(turn1-(left?begin:end))<.002 || Math.abs(absTurn-.5)<.125,
-			 r0=svg[0].getBoundingClientRect().width/2,
-			 r=r0+line.width(),
-			 width=container[0].getBoundingClientRect().width,
-			 side=width<r0*5.85,
-			 center=side?r0:width/2;
-
-			pointer.css({
-				opacity: 1,
-				'--turn': turn0+turn*(1+near*3)+'turn',
-				fill: color,
-				transition: duration+'s '+delay+'s'
-			}).off('transitionend');
-
-			if (near) pointer.one('transitionend', e=>{
-				pointer.css({
-					'--turn': turn0+turn+'turn',
-					transition: '.2s cubic-bezier(.1, 0, .35, 1)'
-				});
-			});
-
-			const ready=$('circle.hover', svg).removeClass('hover')[0];//.css({filter: ''});
-			glow.add(sector).addClass('hover');//.css({filter: 'drop-shadow(0 0 3px '+color+')', transition: '.3s'});
-			if (!ready) {
-				glow.css('opacity', 0);
-				sector.on('transitionend', function tr(e) {
-					if (e.originalEvent.propertyName=='opacity') return;
-					glow.css('opacity', '');
-					hovered=i;
-					sector.off('transitionend', tr)
-				})
-			}
-
-			svg.css('transform', `translateX(${(left?side:-side)*(width/2-r0)}px)`);
-
-			$('.pie-title.visible').not(title[0]).removeClass('visible');
-			title.css({
-				[left?'right':'left']: Math.cos(turn1*Math.PI*2)*(left?-r:r)+center,
-				[up?'bottom':'top']: Math.sin(turn1*Math.PI*2)*(up?-r:r)+r0,
-				// top: *r,
-				transitionDelay: Math.max((duration-.4)*(1+.2*side), .1)+delay+'s'
-			})[left?'addClass':'removeClass']('pie-left').addClass('visible');
-			//console.log(turn1)
+		.circle-widget pattern g { 
+			filter: url(#c_filter);
 		}
-		start0+=val;
-	})
+		</style>
+		<filter id="c_filter">
+		    <feGaussianBlur stdDeviation="${thickness_pie*.3}" result="blur" />
+		    <feComposite in2="blur" in="SourceAlpha" operator="out" />
+		    <feComponentTransfer in="image1">
+			 <feFuncA type="linear" slope="0.55"/>
+			</feComponentTransfer>
+			<feBlend in2="SourceGraphic" mode="multiply"/>
+		</filter>
+	</svg>`)
 
-	function showPie() {
-		let rect=svg[0].getBoundingClientRect();
-		if (rect.bottom<100 || rect.top>innerHeight-100) return;
-		hovered=sectors.length;
-		sectors[hovered-1].hover(.7);
-		setTimeout(()=>{svg.addClass('complete')}, 10);
-		$(window).off('scroll', showPie);
-	}
-	showPie();
-	let timeout;
-	$(window).on('resize', e=>{
-		if (!svg[0].parentNode) return;
-		clearTimeout(timeout);
-		timeout=setTimeout(()=>{
-			console.log($(window).width())
-			svg.prependTo(container);//.detach()
-			requestAnimationFrame(()=>sectors[hovered++].hover());
-		}, 10)
-	}).on('scroll', showPie)
+	return this.each(function(){
+		var $el=$(this);
+		if ($el.data('isDiagtam')) return;
+		$el.data('isDiagtam', 1);
+
+		$._cNum=($._cNum||0)+1;
+
+		var grID='c_gradient'+$._cNum;
+		var gr0ID='gtadient'+$._cNum;
+		var patternID='pattern'+$._cNum;
+
+		var isPIE=$el.hasClass('pie'),
+			thickness=thickness_pie;
+			size=size_pie+thickness;
+
+		var R=(size_pie)/2;
+		var length0=R*2*Math.PI, length=length0-.5;
+
+		var gStops=[], values=[], valSum=0, cHtml=`<circle class="arc initial" r="${R}" stroke="#fff" stroke-width="${thickness}" />`, sum = 0;
+
+		var items=$('.data-list div').clone().addClass('item').each(function(i){
+			$el.append(this);
+			console.log(values[i]=parseFloat($('dt',this).text().replace(',', '')), i);
+			if (isNaN(values[i])) console.error('incorrect value:', $('dt',this).text());
+			else sum+=values[i];
+			length-=offset+min;
+		}).each(function(i){
+			var color=$(this).css('--color');
+			var val=(values[i]||0)/sum*length+min;
+			cHtml+=`<circle class="arc initial" r="${R}" style="
+			 stroke-dashoffset: ${-valSum-offset*.5}px; 
+			 stroke-dasharray: ${val}px ${length0}px;
+			 stroke: ${color};
+			" data-i="${i}"/>`;
+			valSum+=val+offset;
+		})
+		console.log(cHtml)
+
+		var svg=$(`<svg viewBox="${-size/2}, ${-size/2}, ${size}, ${size}">
+			<g stroke-width="${thickness-4}" style="--trans: scale(${(R-thickness*1.5)/R})">${cHtml}
+			</g>
+			<circle class="dots initial" />
+		</svg>`).prependTo($el);
+		setTimeout(()=>{
+		 	svg.addClass('loaded');
+		 	$('.initial', svg).removeClass('initial');
+
+			$('.arc', $el).mouseenter(function(e){
+				var item=items.eq(this.dataset.i).addClass('visible');
+				var w0=item[0].offsetWidth, w=w0-50;
+				w=Math.min(w, e.clientX-10);
+				w=Math.max(w, -document.body.offsetWidth+e.clientX+w0-10);
+				item.css('--arrow-left', Math.min(Math.max(w-13, 4), w0-30)+'px')
+				 .offset({left: e.pageX-w, top: e.pageY+20})
+			}).mouseleave(function(e){
+				var item=items.eq(this.dataset.i).removeClass('visible');
+				$(e.relatedTarget).closest(item).addClass('visible')
+				 .one('mouseleave', function(){item.removeClass('visible')})
+			})
+
+		}, 10);
+
+	})
 }
-function distTo(a, base=1){
-	a=Math.abs(a%base)
-	return Math.min(a, base-a)
-}
+
+$(window).on('load', function(){
+	$('.circle-widget').initCirkle()
+})
