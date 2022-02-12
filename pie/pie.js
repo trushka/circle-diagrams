@@ -61,12 +61,17 @@ $.fn.initCirkle=function() {
 			" data-i="${i}"/>`;
 			valSum+=val+offset;
 		})
+		$('.sum', $el).text(sum.toLocaleString('en'));
 		console.log(cHtml)
 
 		var svg=$(`<svg viewBox="${-size/2}, ${-size/2}, ${size}, ${size}">
-			<g stroke-width="${thickness-4}" style="--trans: scale(${(R-thickness*1.5)/R})">${cHtml}
+			
+			<circle class="dial initial" pathLength="360" />
+			<circle class="dial initial" pathLength="360" />
+
+			<g stroke-width="${thickness-3}" style="--trans: scale(${(R-thickness*1.5)/R})">
+			${cHtml}
 			</g>
-			<circle class="dots initial" />
 		</svg>`).prependTo($el);
 		setTimeout(()=>{
 		 	svg.addClass('loaded');

@@ -1,8 +1,6 @@
 /*styling widget container and background pseudoelements*/
 .circle-widget {
 	position: relative;
-	width: 400px;
-	height: 400px;
 	text-align: center;
 	flex-direction: column;
 	justify-content: center;
@@ -10,44 +8,11 @@
 	align-items: center;
 	display: flex; /*or flex*/
 	vertical-align: middle;
-	--chart-color: #bbb;
-	margin: auto;
 }
 .circle-widget.pie {
 	width: 364px;
 	height: 364px;
 	margin: 0 auto;
-}
-.circle-widget::before, .circle-widget::after {
-	position: absolute;
-	content: '';
-	background: #F7F7F7;
-	border-radius: 50%;
-	box-sizing: border-box;
-	/* z-index: -1; */
-}
-.circle-widget::before {
-	width: 390px;
-	height: 390px;
-	border: #eee 10px solid;
-}
-.circle-widget.pie::before {
-	width: 100%;
-	height: 100%;
-	border-width: 24px;
-	display: none;
-}
-.circle-widget::after {
-	width: 310px;
-	height: 310px;
-	background: linear-gradient(38.85deg, #b7c8e13d 14.69%, rgba(255, 255, 255, 0) 69.33%, rgba(255, 255, 255, 0.38) 85.08%), rgba(255, 255, 255, 0.2);
-	box-shadow: -3px 1px 20px #0004;
-	transition: box-shadow 1s;
-	border: 1.8px #fff solid;
-}
-.circle-widget.pie::after {
-	width: 276px;
-	height: 276px;
 }
 
 /*styling the text inside a circles*/
@@ -55,12 +20,31 @@
 .circle-widget > div {
 	color: #000;
 	position: relative;
+	/* font-weight: lighter; */
 }
-.circle-widget b {
-	display: block;
-	font-size: larger;
-    margin-top: .3em;
-    white-space: nowrap;
+.pie-inner {
+	border-radius: 50%;
+	box-sizing: border-box;
+	background: linear-gradient(38.85deg, #b7c8e13d 14.69%, rgba(255, 255, 255, 0) 69.33%, rgba(255, 255, 255, 0.38) 85.08%), rgba(255, 255, 255, 0.2);
+	box-shadow: -3px 1px 20px #0004;
+	transition: box-shadow 1s;
+	border: 1.8px #fff solid;
+	width: 276px;
+	height: 276px;
+	padding: 10% 0;
+}
+.pie-inner .small-caption {
+	font-size: 85%;
+	color: #0009;
+}
+.circle-widget .sum {
+	font-size: 200%;
+	margin: .3em 0;
+}
+.circle-widget .sum::after {
+	content: "₪";
+	font-size: 70%;
+	display: inline-block;
 }
 .circle-widget hr {
 	min-width: 130px;
@@ -99,11 +83,9 @@
 }
 /*Styling svg elements*/
 
-.circle-widget svg {
-	width: 100%;
-	height: 100%;
+.circle-widget>svg {
 	position: absolute;
-	transform: rotate(-90deg);
+	overflow: visible;
 	filter: url(#c_filter) drop-shadow(-3px -9px 25px #0004);
 	/* z-index: -1; */
 }
@@ -114,39 +96,28 @@
 	transition: .8s, opacity .6s;
 }
 
-.circle-widget.chart .arc {
-	transform: scaleX(-1) rotate(90deg);
-	stroke-dasharray: 1px 1200px;
-}
-.circle-widget pattern .arc {
-	transition: none !important;
-	transform: translate(50%, 50%) !important;
+.circle-widget.pie .arc {
+	transform: rotate(-90deg);
 }
 
-.circle-widget .dots {
-    r: 125px;
-    stroke: var(--chart-color);
-    stroke-width: 2px;
-    stroke-dasharray: 0.07px 10px;
+.circle-widget .dial {
+    r: 152px;
+    stroke: #3333;
+    stroke-width: 14px;
+    stroke-dasharray: .3 4.7001;
 }
-.circle-widget.pie .dots {
-    r: 105.8px;
+.circle-widget .dial:first-of-type {
+	stroke-width: 9px;
+	r: 155px;
+	stroke-dashoffset: 2.5;
 }
-.circle-widget .dots.initial {
-	transform: rotate(-10deg);
+.circle-widget .dial.initial {
+	transform: rotate(40deg) scale(.9);
+	opacity: 0;
+	stroke-width: 0;
 }
-.circle-widget .initial {
+.circle-widget .arc.initial {
 	 stroke-width: 0; 
 	 opacity: 0; 
-	 transform: var(--trans);
+	 transform: var(--trans) rotate(-120deg);
 }
-.circle-widget.chart .initial {
-	stroke-dashoffset: 2px;
-}
-.circle-widget. pattern .arc {
-	transform: none !important;
-}
-
-
-.circle-widget:nth-child(3)>svg * {transition-delay: .4s !important}
-.circle-widget:nth-child(4)>svg * {transition-delay: .8s !important}
