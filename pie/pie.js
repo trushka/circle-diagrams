@@ -8,20 +8,18 @@ $.fn.initCirkle=function() {
 		min=3;
 
 	if (!$('#c_filter')[0]) $('body').prepend(`<svg style="position:absolute; visibility:hidden">
-		<style>
-		/*set filter for g instead of the .arc to apply inner shadow to the whole cgat whith the dot*/
-
-		.circle-widget pattern g { 
-			filter: url(#c_filter);
-		}
-		</style>
 		<filter id="c_filter">
-		    <feGaussianBlur stdDeviation="${thickness_pie*.3}" result="blur" />
+		    <feGaussianBlur stdDeviation="7" result="blur" />
 		    <feComposite in2="blur" in="SourceAlpha" operator="out" />
-		    <feComponentTransfer in="image1">
-			 <feFuncA type="linear" slope="0.55"/>
+		    <feComponentTransfer>
+			 <feFuncA type="linear" slope=".8"/>
 			</feComponentTransfer>
 			<feBlend in2="SourceGraphic" mode="multiply"/>
+			<feColorMatrix type="matrix" values="
+				1.4 0 0 0 -.15
+                0 1.4 0 0 -.15
+                0 0 1.4 0 -.15
+                0 0 0 1 0" />
 		</filter>
 	</svg>`)
 
@@ -43,7 +41,7 @@ $.fn.initCirkle=function() {
 		var R=(size_pie)/2;
 		var length0=R*2*Math.PI, length=length0-.5;
 
-		var gStops=[], values=[], valSum=0, cHtml=`<circle class="arc initial" r="${R}" stroke="#fff" stroke-width="${thickness}" />`, sum = 0;
+		var sectors=' var(--space) var(--space)', values=[], valSum=0, cHtml=`<circle class="arc initial" r="${R}" stroke="#fff" stroke-width="${thickness}" />`, sum = 0;
 
 		var items=$('.data-list div').clone().addClass('item').each(function(i){
 			$el.append(this);
@@ -62,10 +60,17 @@ $.fn.initCirkle=function() {
 			valSum+=val+offset;
 		})
 		$('.sum', $el).text(sum.toLocaleString('en'));
-		console.log(cHtml)
 
-		var svg=$(`<svg viewBox="${-size/2}, ${-size/2}, ${size}, ${size}">
-			
+		for (var i = 0; i < 3; i++) {
+			sectors += ` ${Math.sqrt(Math.random())*.9+.1} var(--space)`;
+		}
+
+		var svg=$(`
+		<svg viewBox="${-size/2}, ${-size/2}, ${size}, ${size}">
+			<circle class="arc background initial" style="stroke-dasharray:${sectors} 3" pathLength="4"/>
+		</svg>
+		<svg viewBox="${-size/2}, ${-size/2}, ${size}, ${size}">
+
 			<circle class="dial initial" pathLength="360" />
 			<circle class="dial initial" pathLength="360" />
 
@@ -73,11 +78,12 @@ $.fn.initCirkle=function() {
 			${cHtml}
 			</g>
 		</svg>`).prependTo($el);
+
 		setTimeout(()=>{
 		 	svg.addClass('loaded');
 		 	$('.initial', svg).removeClass('initial');
 
-			$('.arc', $el).mouseenter(function(e){
+			$('.arc[data-i]', $el).mouseenter(function(e){
 				var item=items.eq(this.dataset.i).addClass('visible');
 				var w0=item[0].offsetWidth, w=w0-50;
 				w=Math.min(w, e.clientX-10);
@@ -96,5 +102,5 @@ $.fn.initCirkle=function() {
 }
 
 $(window).on('load', function(){
-	$('.circle-widget').initCirkle()
+	$('.pie').initCirkle()
 })
