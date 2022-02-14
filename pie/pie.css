@@ -114,9 +114,10 @@
 }
 
 .pie .arc.background {
-	r: 88%;
-	stroke: #fff5;
-	stroke-width: 73px;
+	r: 86%;
+	stroke: #fff;
+	stroke-opacity: .23;
+	stroke-width: 70;
 	--space: .23;
 	stroke-linecap: round;
 	stroke-dashoffset: var(--space);
