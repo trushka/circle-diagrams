@@ -45,7 +45,7 @@ $.fn.initCirkle=function() {
 
 		var items=$('.data-list div').clone().addClass('item').each(function(i){
 			$el.append(this);
-			console.log(values[i]=parseFloat($('dt',this).text().replace(',', '')), i);
+			console.log(values[i]=parseFloat($('dt',this).text().replace(/[^0-9.]/g, '')), i);
 			if (isNaN(values[i])) console.error('incorrect value:', $('dt',this).text());
 			else sum+=values[i];
 			length-=offset+min;
