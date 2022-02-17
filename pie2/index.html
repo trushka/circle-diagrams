@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>PIE chart</title>
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0">
+	<script src="../jquery-3.4.1.slim.min.js"></script>
+	<script src="pie.js"></script>
+	<link rel="stylesheet" type="text/css" href="pie.css">
+	<style type="text/css">
+		@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap');
+		:root {
+			background: #D7E1EC;
+			font: 20px/1.12 Rubik, sans-serif;
+			/* text-align: center; */
+			/* color: #1C075F; */
+		}
+		.content {
+			/* overflow: hidden; */
+			text-align: center;
+			margin-top: 200px;
+		}
+		.small {
+			font-size: .6em;
+			line-height: 1em;
+			font-weight: normal;
+		}
+		h3 {text-align: start;}
+
+		.data-list {
+			display: flex;
+			justify-content: space-between;
+			flex-wrap: wrap;
+			text-align: start;
+			background: linear-gradient(180deg, rgba(255, 255, 255, 0) 71.87%, rgba(255, 255, 255, 0.56) 100%), rgba(255, 255, 255, 0.3);
+			border: #fff 1.5px solid;
+			border-radius: 12px;
+			padding: 0 0.8em;
+		}
+		.data-list div {
+			/* flex-basis: 150px; */
+			text-align: start;
+			/* flex-grow: 1; */
+			margin: .8em 2em .8em 0;
+		}
+		.data-list dt {
+			line-height: 1.5em;
+			margin: auto;
+			font-size: 36px;
+			font-weight: 300;
+		}
+		.data-list dd {
+			margin: 0;
+		}
+		.data-list dd::before {
+			content: '';
+			display: inline-block;
+			vertical-align: middle;
+			font-size: .65em;
+			height: 1em;
+			width: 2em;
+			background: var(--color);
+			margin-right: -2em;
+			border-radius: .5em;
+			position: relative;
+			left: .9em;
+		}
+		@media screen and (max-width: 900px) {
+			.pie {
+				font-size: 18px;
+			}
+			.data-list{
+				display: block;
+			}
+		}
+	</style>
+</head>
+<body dir="rtl">
+<section class="content">
+	<h1>צ׳ק אפ דיגיטלי</h1>
+		<div class="pie">
+			<div class="pie-inner">
+				<svg width="35" height="43" viewBox="0 0 35 43"><g fill="none">
+					<circle cx="24.2493" cy="32.1261" r="9.16505" stroke="#29373E" stroke-opacity="0.8" stroke-width="2.29126"/>
+					<ellipse cx="11.768" cy="17.4137" rx="9.76801" ry="3.256" stroke="#29373E" stroke-opacity="0.8" stroke-width="2.29126"/>
+					<path d="M11.768 26.1566C10.4852 26.1566 9.21503 26.0724 8.02992 25.9088C6.84481 25.7452 5.768 25.5053 4.86095 25.203C3.95391 24.9006 3.2344 24.5417 2.74351 24.1467C2.25263 23.7516 1.99997 23.3282 1.99997 22.9006" stroke="#29373E" stroke-opacity="0.8" stroke-width="2.29126" stroke-linecap="round"/>
+					<path d="M11.768 31.5834C10.4852 31.5834 9.21503 31.4992 8.02992 31.3355C6.84481 31.1719 5.768 30.9321 4.86095 30.6297C3.95391 30.3274 3.2344 29.9684 2.74351 29.5734C2.25263 29.1784 1.99997 28.755 1.99997 28.3274" stroke="#29373E" stroke-opacity="0.8" stroke-width="2.29126" stroke-linecap="round"/>
+					<path d="M11.768 37.0102C10.4852 37.0102 9.21503 36.9259 8.02992 36.7623C6.84481 36.5987 5.768 36.3588 4.86095 36.0565C3.95391 35.7541 3.2344 35.3952 2.74351 35.0002C2.25263 34.6051 1.99997 34.1817 1.99997 33.7542" stroke="#29373E" stroke-opacity="0.8" stroke-width="2.29126" stroke-linecap="round"/>
+					<line x1="1.14563" y1="-1.14563" x2="11.9235" y2="-1.14563" transform="matrix(0.707105 -0.707108 0.707105 0.707108 25.0554 11.2415)" stroke="#29373E" stroke-opacity="0.8" stroke-width="2.29126" stroke-linecap="round"/>
+					<line x1="1.14563" y1="-1.14563" x2="5.75969" y2="-1.14563" transform="matrix(0.939692 -0.342021 0.34202 0.939693 26.9742 16.5476)" stroke="#29373E" stroke-opacity="0.8" stroke-width="2.29126" stroke-linecap="round"/>
+					<line x1="1.14563" y1="-1.14563" x2="6.65429" y2="-1.14563" transform="matrix(0.383185 -0.923672 0.923675 0.383176 19.6325 8.39868)" stroke="#29373E" stroke-opacity="0.8" stroke-width="2.29126" stroke-linecap="round"/>
+				</g></svg>
+				<br>סה״כ חיסכון
+				<div class="sum"></div>
+				<div class="small-caption">תאריך הפקה: 22.12.2021</div>
+			</div>
+		</div>
+	<h3>פילוח המוצרים שלך</h3>
+	<dl class="data-list">
+		<div style="--color: #FCD844">
+			<dd>קרן פנסיה</dd>
+			<dt>972,878 ₪</dt>
+		</div>
+		<div style="--color: #4FCEC7">
+			<dd>קרן השתלמות</dd>
+			<dt>249,093 ₪</dt>
+		</div>
+		<div style="--color: #CFAE31">
+			<dd>ביטוח מנהלים</dd>
+			<dt>51,674 ₪</dt>
+		</div>
+		<div style="--color: #F1ACA3">
+			<dd>קופת גמל</dd>
+			<dt>25,698 ₪</dt>
+		</div>
+		<div style="--color: #A6DC0D">
+			<dd>קופת גמל להשקעה</dd>
+			<dt>100 ₪</dt>
+		</div>
+	</dl>
+</section>
+</body>
+</html>

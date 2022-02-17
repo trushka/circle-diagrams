@@ -1,0 +1,156 @@
+/*styling widget container and background pseudoelements*/
+.pie {
+	position: relative;
+	text-align: center;
+	flex-direction: column;
+	justify-content: center;
+	align-content: center;
+	align-items: center;
+	display: flex; /*or flex*/
+	vertical-align: middle;
+	width: 18.2em;
+	height: 18.2em;
+	margin: 0 auto;
+	font-size: 20px;
+}
+
+/*styling the text inside a circles*/
+
+.pie > div {
+	color: #000;
+	position: relative;
+	/* font-weight: lighter; */
+}
+.pie-inner {
+	border-radius: 50%;
+	box-sizing: border-box;
+	background: linear-gradient(38.85deg, #b7c8e13d 14.69%, rgba(255, 255, 255, 0) 69.33%, rgba(255, 255, 255, 0.38) 85.08%), rgba(255, 255, 255, 0.2);
+	box-shadow: -3px 1px 20px #0004;
+	transition: box-shadow 1s;
+	border: 1.8px #fff solid;
+	width: 75.8%;
+	height: 75.8%;
+	padding: 10% 0;
+}
+.pie-inner .small-caption {
+	font-size: 85%;
+	color: #0009;
+}
+.pie .sum {
+	font-size: 200%;
+	margin: .35em 0;
+}
+.pie .sum::after {
+	content: "₪";
+	font-size: 70%;
+	display: inline-block;
+}
+.pie-inner svg{
+	width: 1.75em;
+}
+
+/*styling toolltips in PIE chart*/
+
+.pie .item {
+	text-align: start;
+	position: absolute;
+	background: #e3e8f3c9;
+	border-radius: 5px;
+	padding: .7em 1.3em;
+	border: #fff 1.5px solid;
+	border-top: var(--color) 4px solid;
+	box-shadow: 0px 10px 20px rgba(1, 1, 1, 0.2);
+	transition: .3s, top 50ms, left .1s;
+	--arrow-left: 60%;
+	z-index: 1;
+	filter: drop-shadow(3px 4px 20px rgb(1 1 1 / 20%));
+	margin-right: -50px;
+	-webkit-backdrop-filter: blur(2px);
+	backdrop-filter: blur(2px);
+}
+.pie .item:not(.visible) {
+	visibility: hidden;
+	opacity: 0;
+}
+.pie .item::before {
+	content: '';
+	position: absolute;
+	border: solid;
+	border-color: var(--color) transparent;
+	border-width: 0 13px 13px;
+	left: var(
+	--arrow-left);
+	top: -16px;
+	transition: left 0.1s;
+}
+.pie .item dd {
+	margin: 0;
+	font-weight: 200;
+}
+/*Styling svg elements*/
+
+.pie>svg {
+	position: absolute;
+	overflow: visible;
+	width: 100%;
+	height: 100%;
+	/* z-index: -1; */
+}
+.pie>svg:first-child {
+	z-index: -1;
+}
+.pie>svg>g {
+	filter: url(#c_filter) drop-shadow(-3px -9px 25px #0004);
+}
+
+.pie circle {
+	fill: none;
+	/* stroke-linecap: round; */
+	transition: .8s, opacity .6s, stroke-width 1s cubic-bezier(0.6, 1.7, 0.31, 1);
+}
+
+.pie .arc {
+	transform: rotate(-90deg);
+}
+
+.pie .arc.background {
+	r: 86%;
+	stroke: #fff;
+	stroke-opacity: .23;
+	stroke-width: 70;
+	--space: .23;
+	stroke-linecap: round;
+	stroke-dashoffset: var(--space);
+	transition: 1s .1s, stroke-width 1.2s cubic-bezier(0.6, 2.3, 0.5, 1) .3s;
+	transition-delay: .3s;
+	--trans: scale(.6) rotate(40deg);
+}
+@media screen and (max-width: 600px) {
+	.pie .arc.background {
+		r: 63%;
+		stroke-width: 52px;
+		--space: .22;
+	}
+}
+
+.pie .dial {
+    r: 152px;
+    stroke: #3334;
+    stroke-width: 14px;
+    stroke-dasharray: .3 4.7001;
+}
+.pie .dial:first-of-type {
+	stroke-width: 9px;
+	r: 155px;
+	stroke-dashoffset: 2.5;
+}
+.pie .dial.initial {
+	transform: rotate(40deg) scale(.9);
+	opacity: 0;
+	stroke-width: 0;
+}
+.pie .arc.initial {
+	 stroke-width: 0; 
+	 opacity: 0; 
+	 transform: var(--trans) rotate(-110deg);
+}
